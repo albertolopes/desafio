@@ -2,7 +2,6 @@ package com.beto.desafio.entities;
 
 import com.beto.desafio.entities.Enum.Sexo;
 import com.beto.desafio.entities.Enum.StatusFuncionario;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 

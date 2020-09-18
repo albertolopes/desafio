@@ -1,6 +1,5 @@
 package com.beto.desafio.exceptions.handlers;
 
-import com.beto.desafio.exceptions.AuthorizationException;
 import com.beto.desafio.exceptions.DataIntegrityException;
 import com.beto.desafio.exceptions.ObjectAlreadyExistsException;
 import com.beto.desafio.exceptions.ValidationError;
@@ -41,6 +40,14 @@ public class ResourceExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
     }
 
+    @ExceptionHandler(IllegalAccessException.class)
+    public ResponseEntity<StandardError> IllegalAccessException(IllegalAccessException e, HttpServletRequest request) {
+
+        StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.BAD_REQUEST.value(),
+                "Acesso Ilegal", e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<StandardError> validation(MethodArgumentNotValidException e, HttpServletRequest request) {
 
@@ -50,14 +57,6 @@ public class ResourceExceptionHandler {
             err.addError(x.getField(), x.getDefaultMessage());
         }
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(err);
-    }
-
-    @ExceptionHandler(AuthorizationException.class)
-    public ResponseEntity<StandardError> authorization(AuthorizationException e, HttpServletRequest request) {
-
-        StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.FORBIDDEN.value(),
-                e.getMessage(), e.getMessage(), request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(err);
     }
 
 }
