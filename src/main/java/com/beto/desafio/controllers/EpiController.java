@@ -43,9 +43,9 @@ public class EpiController {
     }
 
     @ApiOperation("Deletar Epi")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarEpi(@PathVariable("id") Long id){
-        service.deletar(id);
+    @DeleteMapping
+    public ResponseEntity<Void> deletarEpi(@RequestBody EpiDTO dto){
+        service.deletar(mapper.toEntity(dto));
         return ResponseEntity.noContent().build();
     }
 }

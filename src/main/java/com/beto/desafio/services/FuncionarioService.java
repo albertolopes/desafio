@@ -3,88 +3,94 @@ package com.beto.desafio.services;
 import com.beto.desafio.entities.Enum.StatusFuncionario;
 import com.beto.desafio.entities.Funcionario;
 import com.beto.desafio.exceptions.IllegalAccessException;
+import com.beto.desafio.exceptions.ObjectAlreadyExistsException;
 import com.beto.desafio.exceptions.ObjectNotFoundException;
-import com.beto.desafio.repository.EpiRepository;
 import com.beto.desafio.repository.FuncionarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class FuncionarioService {
 
-    @Value("${contato.disco.raiz}")
-    private String raiz;
-
-    @Value("${contato.disco.diretorio-fotos}")
-    private String diretorioFotos;
+    @Autowired
+    private FuncionarioRepository repository;
 
     @Autowired
-    private FuncionarioRepository funcionarioRepository;
-
-    @Autowired
-    private EpiRepository epiRepository;
+    private FileService fileService;
 
     public Funcionario salvar(Funcionario funcionario){
-        funcionario = funcionarioRepository.save(funcionario);
-        return funcionario;
+        if(repository.buscarFuncionarioPorCpf(funcionario.getCpf()) != null){
+            System.out.println("aqui");
+            throw new ObjectAlreadyExistsException("Cpf já cadastrado");
+        } else if (repository.buscarFuncionarioPorRg(funcionario.getRg()) != null){
+            throw new ObjectAlreadyExistsException("Rg já cadastrado");
+        }
+
+        return repository.save(funcionario);
     }
 
     public Optional<Funcionario> buscarFuncionario(Long id) {
-        return funcionarioRepository.findById(id);
+        return repository.findById(id);
+    }
+
+
+    public Funcionario atualizar(Funcionario funcionario) {
+        Funcionario objCpf = repository.buscarFuncionarioPorCpf(funcionario.getCpf());
+        if(objCpf != null && objCpf.getId() != funcionario.getId()){
+            throw new ObjectAlreadyExistsException("Cpf já cadastrado");
+        }
+
+        Funcionario objRg = repository.buscarFuncionarioPorRg(funcionario.getRg());
+        if (objRg != null && objRg.getId() != funcionario.getId()){
+            throw new ObjectAlreadyExistsException("Rg já cadastrado");
+        }
+
+        if(!repository.findById(funcionario.getId()).isPresent()){
+            throw new ObjectNotFoundException("Funcionario não encontrado");
+        }
+        return repository.save(funcionario);
     }
 
     public List<Funcionario> filtrarFuncionario(String status) {
         if(status.equals("ATIVO")){
-            List<Funcionario> list = funcionarioRepository.findFuncionarioByStatus(StatusFuncionario.ATIVO);
+            List<Funcionario> list = repository.findFuncionarioByStatus(StatusFuncionario.ATIVO);
             return list;
         } else if(status.equals("INATIVO")){
-            List<Funcionario> list = funcionarioRepository.findFuncionarioByStatus(StatusFuncionario.INATIVO);
+            List<Funcionario> list = repository.findFuncionarioByStatus(StatusFuncionario.INATIVO);
             return list;
         } else if(status.isEmpty()) {
-            List<Funcionario> list = funcionarioRepository.findAll();
+            List<Funcionario> list = repository.findAll();
             return list;
         }
         throw new IllegalAccessException("Parametros devem ser ATIVO, INATIVO ou vazio");
     }
 
-    public Funcionario atualizar(Funcionario funcionario) {
-        if(!funcionarioRepository.findById(funcionario.getId()).isPresent()){
+    public void deletar(Funcionario funcionario) {
+        Funcionario valid = repository.findById(funcionario.getId()).get();
+        if(valid == null){
             throw new ObjectNotFoundException("Funcionario não encontrado");
         }
-        return funcionarioRepository.save(funcionario);
-    }
-
-    public void deletar(Long id) {
-        if(!funcionarioRepository.findById(id).isPresent()){
-            throw new ObjectNotFoundException("Funcionario não encontrado");
-        }
-        funcionarioRepository.deleteById(id);
+        fileService.deletarArquivo(valid.getAtestado());
+        repository.delete(funcionario);
     }
 
     public String salvarArquivo(Long id, MultipartFile arquivo){
-
-        Path diretorioPath = Paths.get(raiz, diretorioFotos);
-        Path arquivoPath = diretorioPath.resolve(arquivo.getOriginalFilename());
-
-        try {
-            Files.createDirectories(diretorioPath);
-            arquivo.transferTo(arquivoPath.toFile());
-        } catch (IOException e) {
-            throw new RuntimeException("Problemas na tentativa de salvar arquivo.", e);
+        Funcionario funcionario = repository.findById(id).get();
+        if(funcionario == null){
+            throw new ObjectNotFoundException("Funcionario não encontrado");
         }
 
-//        Optional<Funcionario> funcionario = funcionarioRepository.findById(id);
-//        funcionario.setAtestado(raiz + diretorioFotos + "/" + arquivo.getOriginalFilename());
+        String uri = fileService.salvarArquivo(arquivo);
+        funcionario.setAtestado(uri);
 
-        return null;
+        repository.save(funcionario);
+
+        return uri;
     }
+
 }

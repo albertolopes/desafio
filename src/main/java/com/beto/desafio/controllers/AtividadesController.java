@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 
 @Controller
-@RequestMapping(value = "/atividade")
+@RequestMapping(value = "/atividades")
 @Api("API REST ATIVIDADE")
 public class AtividadesController {
 

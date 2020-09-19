@@ -15,4 +15,9 @@ public interface FuncionarioRepository extends JpaRepository<Funcionario, Long> 
     @Query("select f from Funcionario f where f.statusFuncionario = :status")
     List<Funcionario> findFuncionarioByStatus(@Param("status") StatusFuncionario status);
 
+    @Query("select f from Funcionario f where f.cpf = :cpf")
+    Funcionario buscarFuncionarioPorCpf(@Param("cpf") String cpf);
+
+    @Query("select f from Funcionario f where f.rg = :rg")
+    Funcionario buscarFuncionarioPorRg(@Param("rg") String rg);
 }

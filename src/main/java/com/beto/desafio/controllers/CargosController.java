@@ -15,7 +15,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping(value = "/cargos")
-@Api("API REST ATIVIDADE")
+@Api("API REST CARGOS")
 public class CargosController {
 
     @Autowired

@@ -31,12 +31,11 @@ public class FuncionarioController {
         return ResponseEntity.ok(mapper.toDto(service.salvar(mapper.toEntity(dto))));
     }
 
-    @ApiOperation("Adiciona Arquivo para um usuario")
-    @PostMapping("/arquivo")
-    public ResponseEntity<Void> salvarArquivo(@RequestParam(name = "id") Long id,
-                                              @RequestParam(name = "file") MultipartFile file){
-        String uri =service.salvarArquivo(id, file);
-        return ResponseEntity.noContent().build();
+    @ApiOperation("Adiciona Arquivo para um funcionario")
+    @PostMapping("/arquivo/{id}")
+    public ResponseEntity<String> salvarArquivo(@PathVariable Long id,
+                                             @RequestParam(name = "file") MultipartFile file){
+        return ResponseEntity.ok(service.salvarArquivo(id, file));
     }
 
     @ApiOperation("Atualiza funcionario")
@@ -64,9 +63,9 @@ public class FuncionarioController {
     }
 
     @ApiOperation("Deletar Funcionario")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarFuncionario(@PathVariable("id") Long id){
-        service.deletar(id);
+    @DeleteMapping
+    public ResponseEntity<Void> deletarFuncionario(@RequestBody FuncionarioDTO dto){
+        service.deletar(mapper.toEntity(dto));
         return ResponseEntity.noContent().build();
     }
 }

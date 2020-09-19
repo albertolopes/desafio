@@ -33,10 +33,10 @@ public class EpiService {
         return epis;
     }
 
-    public void deletar(Long id) {
-        if(!epiRepository.findById(id).isPresent()){
+    public void deletar(Epi epi) {
+        if(!epiRepository.findById(epi.getId()).isPresent()){
             throw new ObjectNotFoundException("Epi não encontrado");
         }
-        epiRepository.deleteById(id);
+        epiRepository.delete(epi);
     }
 }
