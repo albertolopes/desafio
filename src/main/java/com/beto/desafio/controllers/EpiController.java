@@ -38,7 +38,7 @@ public class EpiController {
 
     @ApiOperation("Busca Epi pelo ID do funcionario")
     @GetMapping("/{id}")
-    public ResponseEntity<List<EpiDTO>> salvarEpi(@PathVariable Long id){
+    public ResponseEntity<List<EpiDTO>> buscarEpi(@PathVariable Long id){
         return ResponseEntity.ok(mapper.toDto(service.buscarEpiporFuncionario(id)));
     }
 

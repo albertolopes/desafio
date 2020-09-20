@@ -1,6 +1,7 @@
 package com.beto.desafio.Repository;
 
 import com.beto.desafio.entities.Enum.Sexo;
+import com.beto.desafio.entities.Enum.StatusEPI;
 import com.beto.desafio.entities.Enum.StatusFuncionario;
 import com.beto.desafio.entities.Funcionario;
 import com.beto.desafio.repository.FuncionarioRepository;
@@ -62,6 +63,7 @@ public class FuncionarioRepositoryTest {
         funcionario.setAtestado("");
         funcionario.setSexo(Sexo.MASCULINO);
         funcionario.setStatusFuncionario(StatusFuncionario.ATIVO);
+        funcionario.setStatusEpi(StatusEPI.USA);
 
         entityManager.persist(funcionario);
     }

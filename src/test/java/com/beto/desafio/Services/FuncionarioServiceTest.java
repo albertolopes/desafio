@@ -1,6 +1,7 @@
 package com.beto.desafio.Services;
 
 import com.beto.desafio.entities.Enum.Sexo;
+import com.beto.desafio.entities.Enum.StatusEPI;
 import com.beto.desafio.entities.Enum.StatusFuncionario;
 import com.beto.desafio.entities.Funcionario;
 import com.beto.desafio.repository.FuncionarioRepository;
@@ -17,6 +18,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -82,6 +84,7 @@ public class FuncionarioServiceTest {
     @DisplayName("Deve deletar funcionario")
     public void deletarFuncionario(){
         Funcionario obj = criarFuncionario();
+
         Mockito.when(repository.findById(Mockito.anyLong())).thenReturn(Optional.of(obj));
         Mockito.when(fileService.deletarArquivo(anyString())).thenReturn(true);
 
@@ -95,14 +98,16 @@ public class FuncionarioServiceTest {
     public void salvarArquivo() throws IOException {
         Funcionario obj = criarFuncionario();
         MockMultipartFile mockMultipartFile = new MockMultipartFile(
-                "foo",
-                "foo.txt",
+                "file",
+                "file.txt",
                 MediaType.TEXT_PLAIN_VALUE,
-                "Hello World".getBytes());
+                "file file".getBytes());
 
         Mockito.when(repository.findById(Mockito.anyLong())).thenReturn(Optional.of(obj));
 
         String resposta = service.salvarArquivo(1l, mockMultipartFile);
+
+        verify(fileService).salvarArquivo(mockMultipartFile);
     }
 
     private Funcionario criarFuncionario(){
@@ -115,6 +120,7 @@ public class FuncionarioServiceTest {
         funcionario.setAtestado("");
         funcionario.setSexo(Sexo.MASCULINO);
         funcionario.setStatusFuncionario(StatusFuncionario.ATIVO);
+        funcionario.setStatusEpi(StatusEPI.USA);
 
         return funcionario;
     }

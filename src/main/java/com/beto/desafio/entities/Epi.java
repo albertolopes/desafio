@@ -29,12 +29,10 @@ public class Epi implements Serializable {
     @Column(name = "CA")
     private Integer ca;
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name="FUNCIONARIO_ID")
     private Funcionario funcionario;
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name="EQUIPAMENTOS_ID")
     private Equipamentos Equipamentos;

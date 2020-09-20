@@ -1,7 +1,9 @@
 package com.beto.desafio.entities;
 
 import com.beto.desafio.entities.Enum.Sexo;
+import com.beto.desafio.entities.Enum.StatusEPI;
 import com.beto.desafio.entities.Enum.StatusFuncionario;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
@@ -35,6 +37,9 @@ public class Funcionario implements Serializable {
     @Column(name = "RG")
     private String rg;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING,
+            pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'",
+            timezone = "GMT")
     @Column(name = "NASCIMENTO")
     private Instant nascimento;
 
@@ -47,6 +52,9 @@ public class Funcionario implements Serializable {
     @Column(name = "STATUS_FUNCIONARIO")
     private StatusFuncionario statusFuncionario;
 
+    @Column(name = "STATUS_EPI")
+    private StatusEPI statusEpi;
+
     @OneToOne
     @JoinColumn(name = "CARGOS_ID")
     private Cargos cargos;
@@ -54,6 +62,4 @@ public class Funcionario implements Serializable {
     @JsonIgnore
     @OneToMany(mappedBy = "funcionario", cascade = CascadeType.ALL)
     private List<Epi> epis = new ArrayList<>();
-
-
 }

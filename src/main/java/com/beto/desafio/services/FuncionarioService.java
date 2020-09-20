@@ -7,7 +7,6 @@ import com.beto.desafio.exceptions.ObjectAlreadyExistsException;
 import com.beto.desafio.exceptions.ObjectNotFoundException;
 import com.beto.desafio.repository.FuncionarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,7 +24,6 @@ public class FuncionarioService {
 
     public Funcionario salvar(Funcionario funcionario){
         if(repository.buscarFuncionarioPorCpf(funcionario.getCpf()) != null){
-            System.out.println("aqui");
             throw new ObjectAlreadyExistsException("Cpf já cadastrado");
         } else if (repository.buscarFuncionarioPorRg(funcionario.getRg()) != null){
             throw new ObjectAlreadyExistsException("Rg já cadastrado");
@@ -81,6 +79,7 @@ public class FuncionarioService {
 
     public String salvarArquivo(Long id, MultipartFile arquivo){
         Funcionario funcionario = repository.findById(id).get();
+
         if(funcionario == null){
             throw new ObjectNotFoundException("Funcionario não encontrado");
         }
